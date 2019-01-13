@@ -39,6 +39,9 @@ dependencies {
     )
     runtimeOnly('com.h2database:h2')
     compileOnly('org.projectlombok:lombok')
+    testCompileOnly('org.projectlombok:lombok')
+    annotationProcessor('org.projectlombok:lombok')
+    testAnnotationProcessor('org.projectlombok:lombok')
     testImplementation(
             "org.spockframework:spock-core:${spockVersion}",
             "org.spockframework:spock-spring:${spockVersion}",
