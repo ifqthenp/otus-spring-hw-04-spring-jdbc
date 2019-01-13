@@ -1,0 +1,65 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.2.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.otus.2018-11'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    spockVersion = '1.2-groovy-2.5'
+    groovyVersion = '2.5.5'
+    springShellVersion = '2.0.1.RELEASE'
+    junitJupiterVersion = '5.3.2'
+    junitVintageVersion = '5.3.2'
+}
+
+dependencies {
+    implementation(
+            'org.springframework.boot:spring-boot-starter-jdbc',
+            "org.springframework.shell:spring-shell-starter:${springShellVersion}"
+    )
+    runtimeOnly('com.h2database:h2')
+    compileOnly('org.projectlombok:lombok')
+    testImplementation(
+            "org.spockframework:spock-core:${spockVersion}",
+            "org.spockframework:spock-spring:${spockVersion}",
+            "org.codehaus.groovy:groovy-all:${groovyVersion}",
+            'org.springframework.boot:spring-boot-starter-test',
+            "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
+    )
+    testRuntimeOnly(
+            "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}",
+            "org.junit.vintage:junit-vintage-engine:${junitVintageVersion}"
+    )
+}
+
+test {
+    useJUnitPlatform()
+}
+
+clean.doFirst {
+    delete "out"
+}
+
+bootJar {
+    archiveName = "${project.name}.${extension}"
+}
