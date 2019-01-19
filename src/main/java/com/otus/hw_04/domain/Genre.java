@@ -13,10 +13,6 @@ public class Genre {
         return id;
     }
 
-    public void setId(final long id) {
-        this.id = id;
-    }
-
     public String getGenre() {
         return genre;
     }

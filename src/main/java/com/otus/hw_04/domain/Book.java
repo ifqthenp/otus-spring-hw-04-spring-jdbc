@@ -1,59 +1,65 @@
 package com.otus.hw_04.domain;
 
-import java.time.LocalDate;
-
 public class Book {
 
     private long id;
-    private Author author;
-    private Genre genre;
-    private LocalDate publishingDate;
+    private String title;
+    private long authorId;
+    private long genreId;
+    private String written;
 
-    public Book(final long id, final Author author, final Genre genre, final LocalDate publishingDate) {
+    public Book(final long id, final String title, final long authorId, final long genreId, final String written) {
         this.id = id;
-        this.author = author;
-        this.genre = genre;
+        this.title = title;
+        this.authorId = authorId;
+        this.genreId = genreId;
+        this.written = written;
     }
 
     public long getId() {
         return id;
     }
 
-    public void setId(final long id) {
-        this.id = id;
+    public String getTitle() {
+        return title;
     }
 
-    public Author getAuthor() {
-        return author;
+    public void setTitle(final String title) {
+        this.title = title;
     }
 
-    public void setAuthor(final Author author) {
-        this.author = author;
+    public long getAuthorId() {
+        return authorId;
     }
 
-    public Genre getGenre() {
-        return genre;
+    public void setAuthorId(final long authorId) {
+        this.authorId = authorId;
     }
 
-    public void setGenre(final Genre genre) {
-        this.genre = genre;
+    public long getGenreId() {
+        return genreId;
     }
 
-    public LocalDate getPublishingDate() {
-        return publishingDate;
+    public void setGenreId(final long genreId) {
+        this.genreId = genreId;
     }
 
-    public void setPublishingDate(final LocalDate publishingDate) {
-        this.publishingDate = publishingDate;
+    public String getWritten() {
+        return written;
+    }
+
+    public void setWritten(final String written) {
+        this.written = written;
     }
 
     @Override
     public String toString() {
         return "Book{" +
             "id=" + id +
-            ", author=" + author +
-            ", genre=" + genre +
-            ", publishingDate=" + publishingDate +
+            ", title='" + title + '\'' +
+            ", authorId=" + authorId +
+            ", genreId=" + genreId +
+            ", written='" + written + '\'' +
             '}';
     }
 
