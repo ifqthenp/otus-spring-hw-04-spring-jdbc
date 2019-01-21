@@ -19,7 +19,7 @@ CREATE TABLE books(
     , author_id BIGINT
     , genre_id BIGINT
     , written VARCHAR(4)
-    , FOREIGN KEY (author_id) REFERENCES authors(id)
-    , FOREIGN KEY (genre_id) REFERENCES genres(id)
+    , FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
+    , FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
 );
 
