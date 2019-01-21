@@ -35,9 +35,9 @@ ext {
 dependencies {
     implementation(
             'org.springframework.boot:spring-boot-starter-jdbc',
-            "org.springframework.shell:spring-shell-starter:${springShellVersion}"
+            "org.springframework.shell:spring-shell-starter:${springShellVersion}",
+            'com.h2database:h2'
     )
-    runtimeOnly('com.h2database:h2')
     compileOnly('org.projectlombok:lombok')
     testCompileOnly('org.projectlombok:lombok')
     annotationProcessor('org.projectlombok:lombok')
