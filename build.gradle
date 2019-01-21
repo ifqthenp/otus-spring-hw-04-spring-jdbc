@@ -61,6 +61,9 @@ wrapper {
 
 test {
     useJUnitPlatform()
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }
 
 clean.doFirst {
