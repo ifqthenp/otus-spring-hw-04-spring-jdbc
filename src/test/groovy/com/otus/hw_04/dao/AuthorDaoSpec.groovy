@@ -33,8 +33,8 @@ class AuthorDaoSpec extends Specification {
     JdbcTemplate jdbcTemplate
 
     void setup() {
-        authorDao != null
-        jdbcTemplate != null
+        assert authorDao != null
+        assert jdbcTemplate != null
     }
 
     def "can find author by id"() {
