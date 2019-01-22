@@ -93,7 +93,7 @@ public class JdbcAuthorDao implements AuthorDao {
 
     private RowMapper<Author> authorRowMapper = (ResultSet rs, int rowNum) -> {
         Author author = new Author();
-        author.setId(rs.getInt("id"));
+        author.setId(rs.getLong("id"));
         author.setFirstName(rs.getString("first_name"));
         author.setLastName(rs.getString("last_name"));
         return author;

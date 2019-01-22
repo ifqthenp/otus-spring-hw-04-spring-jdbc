@@ -92,7 +92,7 @@ public class JdbcGenreDao implements GenreDao {
 
     private RowMapper<Genre> genreRowMapper = (ResultSet rs, int rowNum) -> {
         Genre genre = new Genre();
-        genre.setId(rs.getInt("id"));
+        genre.setId(rs.getLong("id"));
         genre.setGenre(rs.getString("genre"));
         return genre;
     };
