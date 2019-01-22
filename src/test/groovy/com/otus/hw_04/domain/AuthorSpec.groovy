@@ -30,6 +30,17 @@ class AuthorSpec extends Specification {
         }
     }
 
+    def "two-args constructor sets attributes to correct values"() {
+        given:
+        Author author = new Author('Carl', 'Marx')
+
+        expect:
+        author.getId() == 0
+        author.getFirstName() == 'Carl'
+        author.getLastName() == 'Marx'
+
+    }
+
     def "all getters and setters work correctly"() {
         given:
         Author author = new Author(1, 'Johnny', 'Foobar')
