@@ -4,6 +4,6 @@ import com.otus.hw_04.domain.Author;
 
 public interface AuthorDao extends CommonRepository<Author> {
 
-    Author findByName(String name);
+    Iterable<Author> findByName(String name);
 
 }

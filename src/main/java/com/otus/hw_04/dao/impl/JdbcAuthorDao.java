@@ -78,13 +78,9 @@ public class JdbcAuthorDao implements AuthorDao {
     }
 
     @Override
-    public Author findByName(final String name) {
-        try {
-            Map<String, Object> namedParameters = Collections.singletonMap("name", "%" + name + "%");
-            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_NAME, namedParameters, authorRowMapper);
-        } catch (EmptyResultDataAccessException ex) {
-            return null;
-        }
+    public Iterable<Author> findByName(final String name) {
+        Map<String, Object> namedParameters = Collections.singletonMap("name", "%" + name + "%");
+        return jdbcTemplate.query(SQL_QUERY_FIND_BY_NAME, namedParameters, authorRowMapper);
     }
 
     private Author upsert(final Author author, final String sql) {

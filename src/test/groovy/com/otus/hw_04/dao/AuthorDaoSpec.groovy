@@ -54,40 +54,41 @@ class AuthorDaoSpec extends Specification {
 
     def "can find author either by the first or last name, case insensitive"() {
         given:
-        def firstName = 'rBErt'
-        def lastName = 'WeL'
-        Author herbert = authorDao.findByName("$firstName")
-        Author wells = authorDao.findByName("$lastName")
+        def herbertName = 'rBErt'
+        def wellsName = 'WeL'
+        def leoName = 'leo'
+
+        and:
+        Iterable<Author> herbertAuthors = authorDao.findByName("$herbertName")
+        Iterable<Author> wellsAuthors = authorDao.findByName("$wellsName")
+        Iterable<Author> leoAuthors = authorDao.findByName("$leoName")
 
         and:
         def herbertRowsCount = countRowsInTableWhere(jdbcTemplate, table,
-            "LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER('%$firstName%')")
+            "LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER('%$herbertName%')")
         def wellsRowsCount = countRowsInTableWhere(jdbcTemplate, table,
-            "LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER('%$lastName%')")
+            "LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER('%$wellsName%')")
+        def leoRowsCount = countRowsInTableWhere(jdbcTemplate, table,
+            "LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER('%$leoName%')")
 
         expect:
-        herbert == wells
-        wellsRowsCount == 1
-        herbertRowsCount == 1
+        herbertAuthors == wellsAuthors
+        herbertAuthors.size() == herbertRowsCount
+        wellsAuthors.size() == wellsRowsCount
+        leoAuthors.size() == leoRowsCount
     }
 
-    def "returns null if author is not found"() {
+    def "returns null if author is not found by id"() {
         given:
         def id = 0
-        def name = 'foobar'
-        Author authorById = authorDao.findById(id)
-        Author authorByName = authorDao.findByName(name)
+        Author author = authorDao.findById(id)
 
         and:
-        def byIdCount = countRowsInTableWhere(jdbcTemplate, table, "id = $id")
-        def byNameCount = countRowsInTableWhere(jdbcTemplate, table,
-            "LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER('%$name%')")
+        def rowsCount = countRowsInTableWhere(jdbcTemplate, table, "id = $id")
 
         expect:
-        authorById == null
-        authorByName == null
-        byIdCount == 0
-        byNameCount == 0
+        author == null
+        rowsCount == 0
     }
 
     def "can find all authors"() {
@@ -137,24 +138,25 @@ class AuthorDaoSpec extends Specification {
 
     def "can delete an author"() {
         given:
-        def name = 'carrol'
-        Author author = authorDao.findByName(name)
+        def id = 4
+        Author author = authorDao.findById(id)
         assert author != null
 
         and:
-        Iterable<Author> authors = authorDao.findAll()
+        def rowsCount = countRowsInTable(jdbcTemplate, table)
 
         when:
         authorDao.delete(author)
 
         and:
-        authors = authorDao.findAll()
-        author = authorDao.findByName(name)
+        author = authorDao.findById(id)
+
+        and:
+        rowsCount = countRowsInTable(jdbcTemplate, table)
 
         then:
-        authors != old(authors)
-        authors.size() == old(authors.size()) - 1
         author == null
+        rowsCount == old(rowsCount) - 1
     }
 
     void cleanup() {
