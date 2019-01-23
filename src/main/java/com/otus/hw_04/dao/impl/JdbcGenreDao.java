@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.util.Collection;
 
+import static com.otus.hw_04.utils.SqlCommon.getAnyMatchParam;
 import static com.otus.hw_04.utils.SqlCommon.getNamedParam;
 
 @Repository
@@ -71,7 +72,7 @@ public class JdbcGenreDao implements GenreDao {
     @Override
     public Genre findByGenre(final String genre) {
         try {
-            final String param = "%" + genre + "%";
+            final String param = getAnyMatchParam(genre);
             return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_NAME, getNamedParam("genre", param), genreRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;

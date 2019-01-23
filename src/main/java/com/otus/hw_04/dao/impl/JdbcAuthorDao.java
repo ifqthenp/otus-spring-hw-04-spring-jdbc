@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.util.Collection;
 
+import static com.otus.hw_04.utils.SqlCommon.getAnyMatchParam;
 import static com.otus.hw_04.utils.SqlCommon.getNamedParam;
 
 @Repository
@@ -77,7 +78,7 @@ public class JdbcAuthorDao implements AuthorDao {
 
     @Override
     public Iterable<Author> findByName(final String name) {
-        final String param = "%" + name + "%";
+        final String param = getAnyMatchParam(name);
         return jdbcTemplate.query(SQL_QUERY_FIND_BY_NAME, getNamedParam("name", param), authorRowMapper);
     }
 

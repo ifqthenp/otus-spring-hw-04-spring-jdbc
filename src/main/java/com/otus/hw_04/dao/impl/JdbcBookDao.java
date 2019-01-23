@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.otus.hw_04.utils.SqlCommon.getAnyMatchParam;
 import static com.otus.hw_04.utils.SqlCommon.getNamedParam;
 
 @Repository
@@ -49,19 +50,19 @@ public class JdbcBookDao implements BookDao {
 
     @Override
     public Iterable<Book> findByTitle(final String title) {
-        final String param = "%" + title + "%";
+        final String param = getAnyMatchParam(title);
         return jdbcTemplate.query(SQL_QUERY_FIND_BY_TITLE, getNamedParam("title", param), bookRowMapper);
     }
 
     @Override
     public Iterable<Book> findByAuthor(final String author) {
-        final String param = "%" + author + "%";
+        final String param = getAnyMatchParam(author);
         return jdbcTemplate.query(SQL_QUERY_FIND_BY_AUTHOR, getNamedParam("name", param), bookRowMapper);
     }
 
     @Override
     public Iterable<Book> findByGenre(final String genre) {
-        final String param = "%" + genre + "%";
+        final String param = getAnyMatchParam(genre);
         return jdbcTemplate.query(SQL_QUERY_FIND_BY_GENRE, getNamedParam("genre", param), bookRowMapper);
     }
 
