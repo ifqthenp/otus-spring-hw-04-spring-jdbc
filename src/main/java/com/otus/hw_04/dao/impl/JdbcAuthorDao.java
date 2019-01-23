@@ -27,6 +27,13 @@ public class JdbcAuthorDao implements AuthorDao {
     private static final String SQL_QUERY_FIND_BY_NAME = "SELECT * FROM authors WHERE LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER(:name)";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final RowMapper<Author> authorRowMapper = (ResultSet rs, int rowNum) -> {
+        Author author = new Author();
+        author.setId(rs.getLong("id"));
+        author.setFirstName(rs.getString("first_name"));
+        author.setLastName(rs.getString("last_name"));
+        return author;
+    };
 
     public JdbcAuthorDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -91,11 +98,4 @@ public class JdbcAuthorDao implements AuthorDao {
         return key == null ? findById(author.getId()) : findById(key.longValue());
     }
 
-    private RowMapper<Author> authorRowMapper = (ResultSet rs, int rowNum) -> {
-        Author author = new Author();
-        author.setId(rs.getLong("id"));
-        author.setFirstName(rs.getString("first_name"));
-        author.setLastName(rs.getString("last_name"));
-        return author;
-    };
 }
