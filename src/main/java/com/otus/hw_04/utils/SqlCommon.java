@@ -13,4 +13,15 @@ public final class SqlCommon {
         return "%" + param + "%";
     }
 
+    public static String getSqlFindAll(final String table) {
+        return String.format("SELECT * FROM %s", table);
+    }
+
+    public static String getSqlFindById(final String table) {
+        return String.format("SELECT * FROM %s WHERE id = :id", table);
+    }
+
+    public static String getSqlDelete(final String table) {
+        return String.format("DELETE FROM %s WHERE id = :id", table);
+    }
 }
