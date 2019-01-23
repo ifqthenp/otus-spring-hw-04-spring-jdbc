@@ -17,17 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.otus.hw_04.utils.SqlCommon.getAnyMatchParam;
-import static com.otus.hw_04.utils.SqlCommon.getNamedParam;
+import static com.otus.hw_04.utils.SqlCommon.*;
 
 @Repository
 public class JdbcBookDao implements BookDao {
 
-    private static final String SQL_UPDATE = "UPDATE books SET title = :title AND author_id = :author_id AND genre_id = :genre_id AND written = :written WHERE id = :id";
-    private static final String SQL_INSERT = "INSERT INTO books (title, author_id, genre_id, written) VALUES (:title, :author_id, :genre_id, :written)";
-    private static final String SQL_DELETE = "DELETE FROM books WHERE id = :id";
-    private static final String SQL_QUERY_FIND_ALL = "SELECT * FROM books";
-    private static final String SQL_QUERY_FIND_BY_ID = "SELECT * FROM books WHERE id = :id";
+    private static final String TABLE_NAME = "books";
+    private static final String[] TABLE_COLUMNS = {"title", "author_id", "genre_id", "written"};
     private static final String SQL_QUERY_FIND_BY_TITLE = "SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:title)";
     private static final String SQL_QUERY_FIND_BY_GENRE = "SELECT books.id, books.title, books.author_id, books.genre_id, books.written FROM books INNER JOIN genres ON books.genre_id = genres.id WHERE LOWER(genre) LIKE LOWER(:genre)";
     private static final String SQL_QUERY_FIND_BY_AUTHOR = "SELECT books.id, books.title, books.author_id, books.genre_id, books.written FROM books INNER JOIN authors ON books.author_id = authors.id WHERE LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER(:name)";
@@ -79,9 +75,9 @@ public class JdbcBookDao implements BookDao {
             result.setAuthorId(domain.getAuthorId());
             result.setGenreId(domain.getGenreId());
             result.setYear(domain.getYear());
-            return upsert(result, SQL_UPDATE);
+            return upsert(result, getSqlUpdate(TABLE_NAME, TABLE_COLUMNS));
         }
-        return upsert(domain, SQL_INSERT);
+        return upsert(domain, getSqlInsert(TABLE_NAME, TABLE_COLUMNS));
     }
 
     @Override
@@ -92,13 +88,13 @@ public class JdbcBookDao implements BookDao {
 
     @Override
     public void delete(final Book domain) {
-        jdbcTemplate.update(SQL_DELETE, getNamedParam("id", domain.getId()));
+        jdbcTemplate.update(getSqlDelete(TABLE_NAME), getNamedParam("id", domain.getId()));
     }
 
     @Override
     public Book findById(final long id) {
         try {
-            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_ID, getNamedParam("id", id), bookRowMapper);
+            return jdbcTemplate.queryForObject(getSqlFindById(TABLE_NAME), getNamedParam("id", id), bookRowMapper);
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
@@ -106,7 +102,7 @@ public class JdbcBookDao implements BookDao {
 
     @Override
     public Iterable<Book> findAll() {
-        return jdbcTemplate.query(SQL_QUERY_FIND_ALL, bookRowMapper);
+        return jdbcTemplate.query(getSqlFindAll(TABLE_NAME), bookRowMapper);
     }
 
     private Book upsert(final Book book, final String sql) {

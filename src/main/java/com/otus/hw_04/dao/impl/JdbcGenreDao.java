@@ -14,17 +14,13 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.util.Collection;
 
-import static com.otus.hw_04.utils.SqlCommon.getAnyMatchParam;
-import static com.otus.hw_04.utils.SqlCommon.getNamedParam;
+import static com.otus.hw_04.utils.SqlCommon.*;
 
 @Repository
 public class JdbcGenreDao implements GenreDao {
 
-    private static final String SQL_INSERT = "INSERT INTO genres (genre) VALUES (:genre)";
-    private static final String SQL_UPDATE = "UPDATE genres SET genre = :genre WHERE id = :id";
-    private static final String SQL_DELETE = "DELETE FROM genres WHERE id = :id";
-    private static final String SQL_QUERY_FIND_ALL = "SELECT id, genre FROM genres";
-    private static final String SQL_QUERY_FIND_BY_ID = "SELECT * FROM genres WHERE id = :id";
+    private static final String TABLE_NAME = "genres";
+    private static final String[] TABLE_COLUMNS = {"genre"};
     private static final String SQL_QUERY_FIND_BY_NAME = "SELECT * FROM genres WHERE LOWER(genre) LIKE LOWER(:genre)";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -44,9 +40,9 @@ public class JdbcGenreDao implements GenreDao {
         Genre result = findById(domain.getId());
         if (result != null) {
             result.setGenre(domain.getGenre());
-            return upsert(result, SQL_UPDATE);
+            return upsert(result, getSqlUpdate(TABLE_NAME, TABLE_COLUMNS));
         }
-        return upsert(domain, SQL_INSERT);
+        return upsert(domain, getSqlInsert(TABLE_NAME, TABLE_COLUMNS));
     }
 
     @Override
@@ -57,13 +53,13 @@ public class JdbcGenreDao implements GenreDao {
 
     @Override
     public void delete(final Genre domain) {
-        jdbcTemplate.update(SQL_DELETE, getNamedParam("id", domain.getId()));
+        jdbcTemplate.update(getSqlDelete(TABLE_NAME), getNamedParam("id", domain.getId()));
     }
 
     @Override
     public Genre findById(final long id) {
         try {
-            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_ID, getNamedParam("id", id), genreRowMapper);
+            return jdbcTemplate.queryForObject(getSqlFindById(TABLE_NAME), getNamedParam("id", id), genreRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -81,7 +77,7 @@ public class JdbcGenreDao implements GenreDao {
 
     @Override
     public Iterable<Genre> findAll() {
-        return jdbcTemplate.query(SQL_QUERY_FIND_ALL, genreRowMapper);
+        return jdbcTemplate.query(getSqlFindAll(TABLE_NAME), genreRowMapper);
     }
 
     private Genre upsert(final Genre genre, final String sql) {

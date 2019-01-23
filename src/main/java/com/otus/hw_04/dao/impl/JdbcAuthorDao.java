@@ -14,17 +14,13 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.util.Collection;
 
-import static com.otus.hw_04.utils.SqlCommon.getAnyMatchParam;
-import static com.otus.hw_04.utils.SqlCommon.getNamedParam;
+import static com.otus.hw_04.utils.SqlCommon.*;
 
 @Repository
 public class JdbcAuthorDao implements AuthorDao {
 
-    private static final String SQL_INSERT = "INSERT INTO authors (first_name, last_name) VALUES (:first_name, :last_name)";
-    private static final String SQL_UPDATE = "UPDATE authors SET first_name = :first_name AND last_name = :last_name WHERE id = :id";
-    private static final String SQL_DELETE = "DELETE FROM authors WHERE id = :id";
-    private static final String SQL_QUERY_FIND_ALL = "SELECT * FROM authors";
-    private static final String SQL_QUERY_FIND_BY_ID = "SELECT * FROM authors WHERE id = :id";
+    private static final String TABLE_NAME = "authors";
+    private static final String[] TABLE_COLUMNS = {"first_name", "last_name"};
     private static final String SQL_QUERY_FIND_BY_NAME = "SELECT * FROM authors WHERE LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER(:name)";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -46,9 +42,9 @@ public class JdbcAuthorDao implements AuthorDao {
         if (result != null) {
             result.setFirstName(domain.getFirstName());
             result.setLastName(domain.getLastName());
-            return upsert(result, SQL_UPDATE);
+            return upsert(result, getSqlUpdate(TABLE_NAME, TABLE_COLUMNS));
         }
-        return upsert(domain, SQL_INSERT);
+        return upsert(domain, getSqlInsert(TABLE_NAME, TABLE_COLUMNS));
     }
 
     @Override
@@ -59,13 +55,13 @@ public class JdbcAuthorDao implements AuthorDao {
 
     @Override
     public void delete(final Author domain) {
-        jdbcTemplate.update(SQL_DELETE, getNamedParam("id", domain.getId()));
+        jdbcTemplate.update(getSqlDelete(TABLE_NAME), getNamedParam("id", domain.getId()));
     }
 
     @Override
     public Author findById(final long id) {
         try {
-            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_ID, getNamedParam("id", id), authorRowMapper);
+            return jdbcTemplate.queryForObject(getSqlFindById(TABLE_NAME), getNamedParam("id", id), authorRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -73,7 +69,7 @@ public class JdbcAuthorDao implements AuthorDao {
 
     @Override
     public Iterable<Author> findAll() {
-        return jdbcTemplate.query(SQL_QUERY_FIND_ALL, authorRowMapper);
+        return jdbcTemplate.query(getSqlFindAll(TABLE_NAME), authorRowMapper);
     }
 
     @Override
