@@ -9,4 +9,8 @@ public final class SqlCommon {
         return Collections.singletonMap(key, value);
     }
 
+    public static String getAnyMatchParam(final String param) {
+        return "%" + param + "%";
+    }
+
 }
