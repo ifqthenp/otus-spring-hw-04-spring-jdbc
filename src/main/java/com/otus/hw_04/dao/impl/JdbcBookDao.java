@@ -12,7 +12,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.otus.hw_04.utils.SqlCommon.getNamedParam;
 
 @Repository
 public class JdbcBookDao implements BookDao {
@@ -44,20 +49,20 @@ public class JdbcBookDao implements BookDao {
 
     @Override
     public Iterable<Book> findByTitle(final String title) {
-        Map<String, Object> namedParameters = Collections.singletonMap("title", "%" + title + "%");
-        return jdbcTemplate.query(SQL_QUERY_FIND_BY_TITLE, namedParameters, bookRowMapper);
+        final String param = "%" + title + "%";
+        return jdbcTemplate.query(SQL_QUERY_FIND_BY_TITLE, getNamedParam("title", param), bookRowMapper);
     }
 
     @Override
     public Iterable<Book> findByAuthor(final String author) {
-        Map<String, Object> namedParametes = Collections.singletonMap("name", "%" + author + "%");
-        return jdbcTemplate.query(SQL_QUERY_FIND_BY_AUTHOR, namedParametes, bookRowMapper);
+        final String param = "%" + author + "%";
+        return jdbcTemplate.query(SQL_QUERY_FIND_BY_AUTHOR, getNamedParam("name", param), bookRowMapper);
     }
 
     @Override
     public Iterable<Book> findByGenre(final String genre) {
-        Map<String, Object> namedParametes = Collections.singletonMap("genre", "%" + genre + "%");
-        return jdbcTemplate.query(SQL_QUERY_FIND_BY_GENRE, namedParametes, bookRowMapper);
+        final String param = "%" + genre + "%";
+        return jdbcTemplate.query(SQL_QUERY_FIND_BY_GENRE, getNamedParam("genre", param), bookRowMapper);
     }
 
     @Override
@@ -86,15 +91,13 @@ public class JdbcBookDao implements BookDao {
 
     @Override
     public void delete(final Book domain) {
-        Map<String, Object> namedParameters = Collections.singletonMap("id", domain.getId());
-        jdbcTemplate.update(SQL_DELETE, namedParameters);
+        jdbcTemplate.update(SQL_DELETE, getNamedParam("id", domain.getId()));
     }
 
     @Override
     public Book findById(final long id) {
         try {
-            Map<String, Object> namedParameters = Collections.singletonMap("id", id);
-            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_ID, namedParameters, bookRowMapper);
+            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_ID, getNamedParam("id", id), bookRowMapper);
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }

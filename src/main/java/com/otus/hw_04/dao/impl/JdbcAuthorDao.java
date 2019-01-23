@@ -13,8 +13,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+
+import static com.otus.hw_04.utils.SqlCommon.getNamedParam;
 
 @Repository
 public class JdbcAuthorDao implements AuthorDao {
@@ -58,15 +58,13 @@ public class JdbcAuthorDao implements AuthorDao {
 
     @Override
     public void delete(final Author domain) {
-        Map<String, Object> namedParameters = Collections.singletonMap("id", domain.getId());
-        jdbcTemplate.update(SQL_DELETE, namedParameters);
+        jdbcTemplate.update(SQL_DELETE, getNamedParam("id", domain.getId()));
     }
 
     @Override
     public Author findById(final long id) {
         try {
-            Map<String, Object> namedParameters = Collections.singletonMap("id", id);
-            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_ID, namedParameters, authorRowMapper);
+            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_ID, getNamedParam("id", id), authorRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -79,8 +77,8 @@ public class JdbcAuthorDao implements AuthorDao {
 
     @Override
     public Iterable<Author> findByName(final String name) {
-        Map<String, Object> namedParameters = Collections.singletonMap("name", "%" + name + "%");
-        return jdbcTemplate.query(SQL_QUERY_FIND_BY_NAME, namedParameters, authorRowMapper);
+        final String param = "%" + name + "%";
+        return jdbcTemplate.query(SQL_QUERY_FIND_BY_NAME, getNamedParam("name", param), authorRowMapper);
     }
 
     private Author upsert(final Author author, final String sql) {

@@ -3,7 +3,6 @@ package com.otus.hw_04.dao.impl;
 import com.otus.hw_04.dao.GenreDao;
 import com.otus.hw_04.domain.Genre;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,8 +13,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+
+import static com.otus.hw_04.utils.SqlCommon.getNamedParam;
 
 @Repository
 public class JdbcGenreDao implements GenreDao {
@@ -28,6 +27,12 @@ public class JdbcGenreDao implements GenreDao {
     private static final String SQL_QUERY_FIND_BY_NAME = "SELECT * FROM genres WHERE LOWER(genre) LIKE LOWER(:genre)";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private RowMapper<Genre> genreRowMapper = (ResultSet rs, int rowNum) -> {
+        Genre genre = new Genre();
+        genre.setId(rs.getLong("id"));
+        genre.setGenre(rs.getString("genre"));
+        return genre;
+    };
 
     public JdbcGenreDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -51,15 +56,13 @@ public class JdbcGenreDao implements GenreDao {
 
     @Override
     public void delete(final Genre domain) {
-        Map<String, Object> namedParameters = Collections.singletonMap("id", domain.getId());
-        jdbcTemplate.update(SQL_DELETE, namedParameters);
+        jdbcTemplate.update(SQL_DELETE, getNamedParam("id", domain.getId()));
     }
 
     @Override
     public Genre findById(final long id) {
         try {
-            Map<String, Object> namedParameters = Collections.singletonMap("id", id);
-            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_ID, namedParameters, genreRowMapper);
+            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_ID, getNamedParam("id", id), genreRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -68,8 +71,8 @@ public class JdbcGenreDao implements GenreDao {
     @Override
     public Genre findByGenre(final String genre) {
         try {
-            Map<String, Object> namedParameters = Collections.singletonMap("genre", "%" + genre + "%");
-            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_NAME, namedParameters, genreRowMapper);
+            final String param = "%" + genre + "%";
+            return jdbcTemplate.queryForObject(SQL_QUERY_FIND_BY_NAME, getNamedParam("genre", param), genreRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -89,12 +92,5 @@ public class JdbcGenreDao implements GenreDao {
         final Number key = keyHolder.getKey();
         return key == null ? findById(genre.getId()) : findById(key.longValue());
     }
-
-    private RowMapper<Genre> genreRowMapper = (ResultSet rs, int rowNum) -> {
-        Genre genre = new Genre();
-        genre.setId(rs.getLong("id"));
-        genre.setGenre(rs.getString("genre"));
-        return genre;
-    };
 
 }
